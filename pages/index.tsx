@@ -1,5 +1,5 @@
 import { ISendEventResponse } from "matrix-js-sdk";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createRoom, onInit, sendMessage } from "./api/matrix";
 
 export default function Home() {
@@ -10,11 +10,7 @@ export default function Home() {
 
   const [roomId, setRoomId] = useState("");
   const [messageData, setMessageData] = useState<ISendEventResponse>();
-  // onInit();
-  useEffect(() => {
-    // service.sendMessage("!ielVhbjhuurTVrpCXh:matrix.org", "hello new message");
-    // service.createRoom({ name: "new world", description: "hello" });
-  }, []);
+
   const onCreateRoom = () => {
     createRoom({ name, description }).then((data) => {
       setRoomId(data.room_id);
@@ -23,10 +19,13 @@ export default function Home() {
 
   return (
     <>
+      {/* first create an account verify it and then go on and login */}
       <button onClick={() => onInit().then(() => setIsLoggedIn(true))}>
         Login
       </button>
+      {/* below state shows the ability to access the matrix ui if logged in */}
       <p>{isLoggedIn ? "logged In" : "logged Out"}</p>
+      {/* now add a name and description of the room you want to create */}
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -38,7 +37,9 @@ export default function Home() {
         placeholder="description"
       />
       <button onClick={onCreateRoom}>CreateRoom</button>
+      {/* show whether you joined the room or some error happened */}
       <p>Joined room {roomId}</p>
+      {/* add the message you want to send */}
       <input
         value={message}
         onChange={(e) => setMessage(e.target.value)}
@@ -46,13 +47,14 @@ export default function Home() {
       />
       <button
         onClick={() =>
-          sendMessage(roomId, "my new message").then((data) => {
+          sendMessage(roomId, message).then((data) => {
             setMessageData(data);
           })
         }
       >
         SendMessage
       </button>
+      {/* shows data after sent */}
       <p>Data after sending message {messageData?.event_id}</p>
     </>
   );
