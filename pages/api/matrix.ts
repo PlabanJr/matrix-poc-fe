@@ -9,11 +9,11 @@ const client: MatrixClient = sdk.createClient({
 });
 
 async function onInit() {
-  console.log(applicationConfig);
+  console.log(process.env);
 
   await client
     .login("m.login.password", {
-      user: process.env.NEXT_PUBLIC_MATRIX_USER,
+      user: applicationConfig.matrix.username,
       password: applicationConfig.matrix.password,
     })
     .then((data) => {
