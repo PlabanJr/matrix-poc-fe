@@ -1,12 +1,13 @@
-import { ISendEventResponse } from "matrix-js-sdk";
+import { IEventsResponse, ISendEventResponse } from "matrix-js-sdk";
 import { useState } from "react";
-import { createRoom, onInit, sendMessage } from "./api/matrix";
+import { createRoom, getMessages, onInit, sendMessage } from "./api/matrix";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<IEventsResponse["chunk"][]>();
 
   const [roomId, setRoomId] = useState("");
   const [messageData, setMessageData] = useState<ISendEventResponse>();
@@ -49,6 +50,8 @@ export default function Home() {
         onClick={() =>
           sendMessage(roomId, message).then((data) => {
             setMessageData(data);
+            const temp = getMessages(roomId);
+            console.log(temp);
           })
         }
       >
@@ -56,6 +59,16 @@ export default function Home() {
       </button>
       {/* shows data after sent */}
       <p>Data after sending message {messageData?.event_id}</p>
+      <button
+        onClick={() => {
+          console.log("getting...");
+
+          const temp = getMessages(roomId);
+          setMessages(temp.messages);
+        }}
+      >
+        getMessages
+      </button>
     </>
   );
 }

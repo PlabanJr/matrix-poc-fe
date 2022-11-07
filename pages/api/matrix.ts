@@ -19,7 +19,7 @@ async function onInit() {
     .then((data) => {
       console.log(data, "after login");
 
-      localStorage.setItem("userData", data);
+      localStorage.setItem("access_token", data.access_token);
     });
   await client.startClient({ initialSyncLimit: 10 });
 }
@@ -36,8 +36,25 @@ async function sendMessage(roomId: string, message: string) {
     body: message,
     msgtype: "m.text",
   };
-  const messagEvent = await client.sendEvent(roomId, "m.room.message", content);
-  return messagEvent;
+  const messageEvent = await client.sendEvent(
+    roomId,
+    "m.room.message",
+    content
+  );
+  return messageEvent;
+}
+export function getMessages(roomId: string) {
+  const messages: any[] = [];
+  const users: any[] = [];
+  const data = client.getRoom(roomId)?.timeline.forEach((t) => {
+    if (t.event.type === "m.room.message") messages.push(t.event);
+    else if (t.event.type === "m.room.member") users.push(t.event);
+  });
+  return { messages, users };
+}
+
+export function getData() {
+  const data = client;
 }
 
 export { sendMessage, createRoom, onInit };
