@@ -1,8 +1,9 @@
 import * as sdk from "matrix-js-sdk";
 import request from "request";
-import { MatrixClient } from "matrix-js-sdk";
+import { MatrixClient, RoomEvent } from "matrix-js-sdk";
 
 import { applicationConfig } from "../../config";
+import { EventEmitterEvents } from "matrix-js-sdk/lib/models/typed-event-emitter";
 
 const client: MatrixClient = sdk.createClient({
   baseUrl: applicationConfig.matrix.homeServerUrl,
@@ -17,11 +18,26 @@ async function onInit() {
       password: applicationConfig.matrix.password,
     })
     .then((data) => {
-      console.log(data, "after login");
+      startListening();
 
       localStorage.setItem("access_token", data.access_token);
     });
   await client.startClient({ initialSyncLimit: 10 });
+}
+
+export function startListening() {
+  client.on(RoomEvent.Timeline, function (event) {
+    if (event.getType() !== "m.room.message") {
+      return; // only use messages
+    }
+    console.log(
+      event.sender.userId,
+      ": =>",
+      event.event.content!.body,
+      "in the room",
+      event.sender.roomId
+    );
+  });
 }
 
 async function createRoom(chatRoomPayload: {
