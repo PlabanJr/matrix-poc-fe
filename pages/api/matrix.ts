@@ -7,21 +7,21 @@ import { EventEmitterEvents } from "matrix-js-sdk/lib/models/typed-event-emitter
 
 const client: MatrixClient = sdk.createClient({
   baseUrl: applicationConfig.matrix.homeServerUrl,
+  accessToken: 'syt_cGFpbg_NPQVyQpYEtaGNrvXjmFU_0CZBKV'
 });
 
 async function onInit() {
   console.log(process.env);
 
-  await client
-    .login("m.login.password", {
-      user: applicationConfig.matrix.username,
-      password: applicationConfig.matrix.password,
-    })
-    .then((data) => {
+  // await client
+  //   // .login("m.login.token", {
+  //   //   token: 'syt_cGVwcGVyX3Jvbmk_otsCXPiDXzzqDUVEUpnc_2k2E78'
+  //   // })
+  //   .then((data) => {
       startListening();
 
-      localStorage.setItem("access_token", data.access_token);
-    });
+    //   localStorage.setItem("access_token", data.access_token);
+    // });
   await client.startClient({ initialSyncLimit: 10 });
 }
 
@@ -60,9 +60,11 @@ async function sendMessage(roomId: string, message: string) {
   return messageEvent;
 }
 export function getMessages(roomId: string) {
+  console.log(roomId, 'ddd');
   const messages: any[] = [];
   const users: any[] = [];
   const data = client.getRoom(roomId)?.timeline.forEach((t) => {
+    console.log(t, 'dd');
     if (t.event.type === "m.room.message") messages.push(t.event);
     else if (t.event.type === "m.room.member") users.push(t.event);
   });
